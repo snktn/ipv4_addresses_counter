@@ -9,7 +9,7 @@ public class Main {
         try {
             long startTime = System.currentTimeMillis();
             System.out.println(countUniqueAddresses((new File(args[0]))));
-            System.out.println(System.currentTimeMillis() - startTime);
+            System.out.println((System.currentTimeMillis() - startTime) + " ms");
         } catch (FileNotFoundException | InterruptedException e) {
             e.printStackTrace();
             System.exit(-1);

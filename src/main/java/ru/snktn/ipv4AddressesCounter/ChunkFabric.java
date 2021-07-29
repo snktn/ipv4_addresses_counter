@@ -1,21 +1,15 @@
 package ru.snktn.ipv4AddressesCounter;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.LockSupport;
 
 public class ChunkFabric extends Thread implements Runnable {
     private static final int CHUNK_SIZE = 491500;
-    private final int nThreads = Runtime.getRuntime().availableProcessors();
     private final AddressCounter[][] addressCounters;
-    private final LinkedTransferQueue<Runnable> queue = new LinkedTransferQueue<>();
     private final FileInputStream reader;
     private final RandomAccessFile raf;
-    private final ThreadPoolExecutor executor = new ThreadPoolExecutor(
-            nThreads, nThreads, 0, TimeUnit.MILLISECONDS, queue
-    );
-
+    private int nThreads = 1;
     private long offSet = 0L;
 
     public ChunkFabric (File file, AddressCounter[][] addressCounters) throws FileNotFoundException {
@@ -23,8 +17,6 @@ public class ChunkFabric extends Thread implements Runnable {
         this.raf = new RandomAccessFile(file, "r");
         this.addressCounters = addressCounters;
     }
-
-    public static ArrayList<String> log = new ArrayList();
 
     @Override
     public void run() {
@@ -39,6 +31,12 @@ public class ChunkFabric extends Thread implements Runnable {
 
     //find last digit of address after skipped bytes and submit bytes to the parser
     private void markFile () throws IOException, InterruptedException {
+        if (Runtime.getRuntime().availableProcessors() > 1) nThreads = Runtime.getRuntime().availableProcessors() - 1;
+        final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>(nThreads * 16);
+        final ThreadPoolExecutor executor = new ThreadPoolExecutor(
+                nThreads, nThreads, 0, TimeUnit.MILLISECONDS, queue
+        );
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         int c = 0;
         while (c > -1) {
 
@@ -67,7 +65,7 @@ public class ChunkFabric extends Thread implements Runnable {
         executor.shutdown();
         AddressCounter.shutdown();
         while (!executor.isTerminated()) {
-            sleep(1);
+            LockSupport.parkNanos(1000);
         }
         byte[] bytes = new byte[(int) (raf.length() - 1  - offSet + 1)];
         reader.read(bytes);
