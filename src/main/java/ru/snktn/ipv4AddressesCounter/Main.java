@@ -1,6 +1,9 @@
 package ru.snktn.ipv4AddressesCounter;
 
 import java.io.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.locks.LockSupport;
 
 public class Main {
 
@@ -24,24 +27,27 @@ public class Main {
         int nCounters;
         if (nThreads % 2 == 0) nCounters = nThreads;
         else nCounters = nThreads + 1;
+        ExecutorService executorService = Executors.newCachedThreadPool();
         AddressCounter[][] addressCounters = new AddressCounter[2][nCounters];
         for (int i = 0; i < addressCounters.length; i++) {
             for (int j = 0; j < addressCounters[i].length; j++) {
                 addressCounters[i][j] = new AddressCounter(nCounters);
             }
         }
-        ChunkFabric chunkFabric = new ChunkFabric(file, addressCounters);
-        chunkFabric.start();
         for (AddressCounter[] addressCounter : addressCounters) {
             for (AddressCounter counter : addressCounter) {
-                counter.start();
+                executorService.submit(counter);
             }
         }
-        chunkFabric.join();
-        for (AddressCounter[] addressCounter : addressCounters) {
-            for (AddressCounter counter : addressCounter) {
-                counter.join();
-            }
+
+        Reader reader = new Reader(file);
+
+        for (int i = 0; i < nThreads; i++) {
+            executorService.submit(new Parser(addressCounters, reader));
+        }
+        executorService.shutdown();
+        while (!executorService.isTerminated()){
+            LockSupport.parkNanos(100000);
         }
         return AddressCounter.getUniqueAddressesCount();
     }
