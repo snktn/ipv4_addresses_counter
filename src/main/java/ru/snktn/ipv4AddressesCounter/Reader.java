@@ -16,7 +16,7 @@ public class Reader {
         this.reader = new FileInputStream(file);
     }
 
-    synchronized public byte[] read () throws IOException {
+    synchronized public byte[] read () throws IOException, ArrayIndexOutOfBoundsException {
 
         int c;
 
