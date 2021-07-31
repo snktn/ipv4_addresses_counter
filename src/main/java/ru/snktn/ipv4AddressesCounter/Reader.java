@@ -6,8 +6,9 @@ import java.util.ArrayList;
 public class Reader {
     public static final int CHUNK_SIZE = 491500;
     private final FileInputStream reader;
-    private boolean hasNext = true;
+    private final ArrayList<Byte> list = new ArrayList<>(2);
     private byte [] bytes = new byte[CHUNK_SIZE];
+    private boolean hasNext = true;
     public boolean hasNext() {
         return hasNext;
     }
@@ -17,12 +18,8 @@ public class Reader {
     }
 
     synchronized public byte[] read () throws IOException, ArrayIndexOutOfBoundsException {
-
-        int c;
-
-        ArrayList<Byte> list = new ArrayList<>(2);
         reader.read(bytes);
-        c = bytes[bytes.length - 1];
+        int c = bytes[bytes.length - 1];
         if (c == 46 || c >= 48 && c <= 57 )
             while (c == 46 || c >= 48 && c <= 57 ){
                 c = reader.read();
