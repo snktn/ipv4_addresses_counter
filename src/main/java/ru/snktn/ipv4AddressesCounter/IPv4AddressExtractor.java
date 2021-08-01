@@ -1,5 +1,8 @@
 package ru.snktn.ipv4AddressesCounter;
 
+import java.io.IOException;
+import java.util.Arrays;
+
 public interface IPv4AddressExtractor {
 
     default int [] extract(byte[] bytes) {
@@ -47,6 +50,12 @@ public interface IPv4AddressExtractor {
     }
 
     default int intArrayToInt(int[] ints) {
+/*        System.out.println(Arrays.toString(ints));
+        try {
+            System.in.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
         return ints[0] << 24 & -0x1000000 |
                 (ints[1] <<16 & 0x00ff0000) |
                 (ints[2] << 8 & 0x0000ff00) |

@@ -3,8 +3,11 @@ package ru.snktn.ipv4AddressesCounter;
 import java.util.ArrayList;
 
 public class Parser extends Thread implements Runnable, IPv4AddressExtractor {
+    public static final int CHUNK_SIZE = 491500;
     private final AddressCounter [][] addressCounters;
     private final Reader reader;
+    private final ArrayList<Byte> list = new ArrayList<>(15);
+    private final byte [] bb = new byte[CHUNK_SIZE];
     public Parser (AddressCounter[][] addressCounters, Reader reader) {
         this.addressCounters = addressCounters;
         this.reader = reader;
@@ -32,8 +35,9 @@ public class Parser extends Thread implements Runnable, IPv4AddressExtractor {
                     }
                 }
 
-                // get list of decimal values of ipv4 addresses from the received chunk
-                distribute(extract(reader.read()), indexLists, nCounters);
+                // get array of decimal values of ipv4 addresses from the received chunk
+                list.clear();
+                distribute(extract(concatAndReverse(reader.read(bb, list))), indexLists, nCounters);
                 submit(addressCounters, indexLists);
             }
             catch (ArrayIndexOutOfBoundsException ignored) {}
@@ -66,5 +70,21 @@ public class Parser extends Thread implements Runnable, IPv4AddressExtractor {
                 addressCounters[i][j].add(indexLists[i][j]);
             }
         }
+    }
+
+    private byte [] concatAndReverse (byte[][] arrays) {
+        int length = 0;
+        for (byte[] array : arrays) {
+            length += array.length;
+        }
+        byte [] bytes = new byte[length];
+        int i = 0;
+        for (int j = arrays.length - 1; j >= 0; j--) {
+            for (int k = arrays[j].length - 1; k >= 0; k--) {
+                bytes[i] = arrays[j][k];
+                i++;
+            }
+        }
+        return bytes;
     }
 }

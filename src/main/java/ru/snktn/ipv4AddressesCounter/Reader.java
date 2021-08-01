@@ -5,22 +5,19 @@ import java.util.ArrayList;
 
 public class Reader {
     public static final int CHUNK_SIZE = 491500;
-    private final FileInputStream reader;
-    private byte [] bytes = new byte[CHUNK_SIZE];
+    private final BufferedInputStream reader;
     private boolean hasNext = true;
     public boolean hasNext() {
         return hasNext;
     }
 
     public Reader(File file) throws FileNotFoundException {
-        this.reader = new FileInputStream(file);
+        this.reader = new BufferedInputStream(new FileInputStream(file), 15);
     }
 
-    synchronized public byte[] read () throws IOException, ArrayIndexOutOfBoundsException {
+    synchronized public byte[][] read (byte [] bytes, ArrayList<Byte> list) throws IOException, ArrayIndexOutOfBoundsException {
 
         int c;
-        final ArrayList<Byte> list = new ArrayList<>(2);
-
         reader.read(bytes);
         c = bytes[bytes.length - 1];
         if (c == 46 || c >= 48 && c <= 57 )
@@ -34,20 +31,14 @@ public class Reader {
             AddressCounter.lastChunk();
             hasNext = false;
         }
-            return concatAndReverse(bytes, list);
+            return new byte[][]{bytes, toByteArray(list)};
     }
 
-    private byte [] concatAndReverse (byte [] bytes, ArrayList<Byte> list) {
-        byte [] newBytes = new byte[bytes.length + list.size()];
-        int i = 0;
-        for (int j = list.size() - 1; j >= 0; j--) {
-            newBytes[i] = list.get(j);
-            i++;
+    private byte [] toByteArray(ArrayList<Byte> list) {
+        byte [] bytes = new byte[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            bytes[i] = list.get(i);
         }
-        for (int j = bytes.length - 1; j >= 0; j--) {
-            newBytes[i] = bytes[j];
-            i++;
-        }
-        return newBytes;
+        return bytes;
     }
 }

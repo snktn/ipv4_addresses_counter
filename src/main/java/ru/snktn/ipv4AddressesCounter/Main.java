@@ -42,7 +42,7 @@ public class Main {
 
         Reader reader = new Reader(file);
 
-        for (int i = 0; i < nThreads; i++) {
+        for (int i = 0; i < nThreads - 1; i++) {
             executorService.submit(new Parser(addressCounters, reader));
         }
         executorService.shutdown();
