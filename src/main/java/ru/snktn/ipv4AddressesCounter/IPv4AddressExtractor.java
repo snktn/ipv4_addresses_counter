@@ -25,7 +25,12 @@ public interface IPv4AddressExtractor {
                 f = 1;
                 if (i == -1) {
                     i = 3;
-                    arr[k] = intArrayToInt(ints);
+                    try {
+                        arr[k] = intArrayToInt(ints);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.exit(-1);
+                    }
                     k++;
                 }
             }
@@ -37,7 +42,11 @@ public interface IPv4AddressExtractor {
                 f = 1;
                 if (i == -1) {
                     i = 3;
-                    arr[k] = intArrayToInt(ints);
+                    try {
+                        arr[k] = intArrayToInt(ints);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     k++;
                 }
             }

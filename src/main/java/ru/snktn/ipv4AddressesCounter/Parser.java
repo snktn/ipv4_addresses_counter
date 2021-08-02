@@ -18,8 +18,7 @@ public class Parser extends Thread implements Runnable, IPv4AddressExtractor {
         while (reader.hasNext()) {
             try {
                 list.clear();
-                byte [][] ba = reader.read(bb, list);
-                addressCounter.add(extract(concatAndReverse(ba)));
+                addressCounter.add(extract(concatAndReverse(reader.read(bb, list))));
             }
             catch (ArrayIndexOutOfBoundsException ignored) {}
             catch (Exception e) {

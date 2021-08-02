@@ -17,7 +17,7 @@ public class Reader {
     synchronized public byte[][] read (byte [] bytes, ArrayList<Byte> list) throws IOException, ArrayIndexOutOfBoundsException {
 
         byte[][] arrays;
-        if (reader.available() < Parser.CHUNK_SIZE) {
+        if (reader.available() <= Parser.CHUNK_SIZE) {
             AddressCounter.shutdown();
             hasNext = false;
             byte [] lastBytes = new byte[reader.available()];
@@ -32,7 +32,7 @@ public class Reader {
                 c = reader.read();
                 list.add((byte) c );
             }
-            arrays =  new byte[][]{bytes, toByteArray(list)};
+            arrays = new byte[][]{bytes, toByteArray(list)};
         }
         return arrays;
     }
