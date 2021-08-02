@@ -24,31 +24,17 @@ public class Main {
 
     private static int countUniqueAddresses(File file) throws FileNotFoundException, InterruptedException {
         int nThreads = Runtime.getRuntime().availableProcessors();
-        int nCounters;
-        if (nThreads % 2 == 0) nCounters = nThreads;
-        else nCounters = nThreads + 1;
-        ExecutorService executorService = Executors.newCachedThreadPool();
-        AddressCounter[][] addressCounters = new AddressCounter[2][nCounters];
-        for (int i = 0; i < addressCounters.length; i++) {
-            for (int j = 0; j < addressCounters[i].length; j++) {
-                addressCounters[i][j] = new AddressCounter(nCounters);
-            }
-        }
-        for (AddressCounter[] addressCounter : addressCounters) {
-            for (AddressCounter counter : addressCounter) {
-                executorService.submit(counter);
-            }
-        }
-
+        ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
+        AddressCounter counter = new AddressCounter();
+        executorService.submit(counter);
         Reader reader = new Reader(file);
-
         for (int i = 0; i < nThreads - 1; i++) {
-            executorService.submit(new Parser(addressCounters, reader));
+            executorService.submit(new Parser(counter, reader));
         }
         executorService.shutdown();
         while (!executorService.isTerminated()){
             LockSupport.parkNanos(100000);
         }
-        return AddressCounter.getUniqueAddressesCount();
+        return counter.getUniqueAddressesCount();
     }
 }

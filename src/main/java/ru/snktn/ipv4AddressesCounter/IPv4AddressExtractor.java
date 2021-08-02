@@ -1,13 +1,10 @@
 package ru.snktn.ipv4AddressesCounter;
 
-import java.io.IOException;
-import java.util.Arrays;
-
 public interface IPv4AddressExtractor {
 
     default int [] extract(byte[] bytes) {
-        int [] arr = new int[bytes.length / 15];
-        int k = 1;
+        int [] arr = new int[bytes.length / 7];
+        int k = 0;
         int[] ints = new int[4];
         int i = 3; //set last octet of address
         int f = 1; // place value of digit in the octet
@@ -44,18 +41,11 @@ public interface IPv4AddressExtractor {
                     k++;
                 }
             }
-            arr[0] = k - 2;
         }
         return arr;
     }
 
     default int intArrayToInt(int[] ints) {
-/*        System.out.println(Arrays.toString(ints));
-        try {
-            System.in.read();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
         return ints[0] << 24 & -0x1000000 |
                 (ints[1] <<16 & 0x00ff0000) |
                 (ints[2] << 8 & 0x0000ff00) |

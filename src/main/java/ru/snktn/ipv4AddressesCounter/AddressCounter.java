@@ -1,6 +1,5 @@
 package ru.snktn.ipv4AddressesCounter;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -9,48 +8,35 @@ import java.util.concurrent.locks.LockSupport;
 
 public class AddressCounter extends Thread implements Runnable{
     private static final AtomicInteger counter = new AtomicInteger(0);
-    public static int getUniqueAddressesCount() {
-        return counter.get();
-    }
-
     private static final AtomicBoolean shutDown = new AtomicBoolean(false);
     public static void shutdown () {
         shutDown.set(true);
     }
-
-    private static final AtomicBoolean lastChunk = new AtomicBoolean(false);
-    public static void lastChunk () {
-        lastChunk.set(true);
+    private final BitSet [] bitSets;
+    public AddressCounter (){
+        this.bitSets = new BitSet[]{new BitSet(Integer.MAX_VALUE), new BitSet(Integer.MAX_VALUE)};
     }
 
-    private final BitSet bitSet;
-    public AddressCounter (int nCounters){
-        this.bitSet = new BitSet(Integer.MAX_VALUE / nCounters );
+    synchronized public int getUniqueAddressesCount() {
+        return counter.get();
     }
-    protected final LinkedTransferQueue<ArrayList<Integer>> queue = new LinkedTransferQueue<>();
+
+    protected final LinkedTransferQueue<int []> queue = new LinkedTransferQueue<>();
 
     @Override
     public void run() {
         waitTask();
         take();
-        pollLastChunk();
-        int count = bitSet.cardinality();
-        counter.addAndGet(count);
+        counter.addAndGet(bitSets[0].cardinality() + bitSets[1].cardinality());
+    }
+    public void add (int [] decimalAddresses) {
+        queue.put(decimalAddresses);
     }
 
-    public void add (ArrayList<Integer> decimalAddress) {
-        queue.put(decimalAddress);
-    }
-
-    private void setBits (ArrayList<Integer> decimalAddressList) {
-        try {
-            for (int index : decimalAddressList) {
-                bitSet.set(Math.abs(index));
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            System.exit(-1);
+    private void setBits (int [] decimalAddresses) {
+        for (int address : decimalAddresses) {
+            if (address < 0) bitSets[0].set(Math.abs(address));
+            else if (address > 0) bitSets[1].set(address);
         }
     }
 
@@ -69,16 +55,6 @@ public class AddressCounter extends Thread implements Runnable{
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 System.exit(-1);
-            }
-        }
-    }
-
-    private void pollLastChunk() {
-        while (!lastChunk.get() || !queue.isEmpty()) {
-            ArrayList<Integer> indexList = queue.poll();
-            if (indexList != null) setBits(indexList);
-            else {
-                LockSupport.parkNanos(1000);
             }
         }
     }
