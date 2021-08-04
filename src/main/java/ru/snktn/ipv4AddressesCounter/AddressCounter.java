@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
 
 public class AddressCounter extends Thread implements Runnable{
-    private static final AtomicInteger counter = new AtomicInteger(0);
+    private final AtomicInteger counter = new AtomicInteger(0);
     private static final AtomicBoolean shutDown = new AtomicBoolean(false);
     public static void shutdown () {
         shutDown.set(true);

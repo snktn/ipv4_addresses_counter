@@ -8,7 +8,6 @@ import java.util.concurrent.locks.LockSupport;
 public class Main {
 
     public static void main(String[] args) {
-
         try {
             long startTime = System.currentTimeMillis();
             System.out.println(countUniqueAddresses((new File(args[0]))));
@@ -22,7 +21,7 @@ public class Main {
         }
     }
 
-    private static int countUniqueAddresses(File file) throws FileNotFoundException, InterruptedException {
+    public static int countUniqueAddresses(File file) throws FileNotFoundException, InterruptedException {
         int nThreads = Runtime.getRuntime().availableProcessors();
         ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
         AddressCounter counter = new AddressCounter();
