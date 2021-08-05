@@ -43,7 +43,7 @@ public class AddressCounter extends Thread implements Runnable{
     private void waitTask() {
         while (true) {
             if (queue.isEmpty()) {
-                LockSupport.parkNanos(1000);
+                LockSupport.parkNanos(1000000);
             } else break;
         }
     }

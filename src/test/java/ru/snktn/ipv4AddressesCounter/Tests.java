@@ -21,7 +21,7 @@ public class Tests {
 
     @Test
     void longTest () {
-            test(20000000);
+            test(1000000);
     }
 
     private void test (int n) {

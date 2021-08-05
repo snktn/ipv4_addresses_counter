@@ -32,7 +32,7 @@ public class Main {
         }
         executorService.shutdown();
         while (!executorService.isTerminated()){
-            LockSupport.parkNanos(100000);
+            LockSupport.parkNanos(1000000);
         }
         return counter.getUniqueAddressesCount();
     }
