@@ -3,7 +3,7 @@ package ru.snktn.ipv4AddressesCounter;
 import java.io.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.LockSupport;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 
@@ -31,9 +31,7 @@ public class Main {
             executorService.submit(new Parser(counter, reader));
         }
         executorService.shutdown();
-        while (!executorService.isTerminated()){
-            LockSupport.parkNanos(1000000);
-        }
+        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         return counter.getUniqueAddressesCount();
     }
 }

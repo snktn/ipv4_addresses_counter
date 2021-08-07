@@ -13,9 +13,11 @@ public class AddressCounter extends Thread implements Runnable{
     public static void shutdown () {
         shutDown.set(true);
     }
-    private final BitSet [] bitSets;
+    private final BitSet [] bitSets = new BitSet[2];
     public AddressCounter (){
-        this.bitSets = new BitSet[]{new BitSet(Integer.MAX_VALUE), new BitSet(Integer.MAX_VALUE)};
+        for (int i = 0; i < 2; i++) {
+            bitSets[i] = new BitSet(Integer.MAX_VALUE);
+        }
     }
 
     public int getUniqueAddressesCount() {
@@ -43,7 +45,7 @@ public class AddressCounter extends Thread implements Runnable{
     private void waitTask() {
         while (true) {
             if (queue.isEmpty()) {
-                LockSupport.parkNanos(1000000);
+                LockSupport.parkNanos(1000);
             } else break;
         }
     }
