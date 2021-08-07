@@ -8,8 +8,10 @@ This is solution to the task  https://github.com/Ecwid/new-job/blob/master/IP-Ad
 Specify the filename as a program argument.
 
 Docker:
-$docker build -t counter https://github.com/snktn/ipv4_addresses_counter.git
-$docker run -it --mount type=bind,source=$(pwd)/addr_file,target=/usr/addr_counter/file counter
+
+`$docker build -t counter https://github.com/snktn/ipv4_addresses_counter.git`
+
+`$docker run -it --mount type=bind,source=$(pwd)/addr_file,target=/usr/addr_counter/file counter`
 
 
 **Measurements**
