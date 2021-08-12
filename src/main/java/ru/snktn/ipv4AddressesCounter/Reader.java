@@ -3,26 +3,26 @@ package ru.snktn.ipv4AddressesCounter;
 import java.io.*;
 import java.util.ArrayList;
 
-public class Reader {
+
+class Reader {
     private final BufferedInputStream reader;
-    private boolean hasNext = true;
-    public boolean hasNext() {
+    private volatile boolean hasNext = true;
+    synchronized boolean hasNext() {
         return hasNext;
     }
 
-    public Reader(File file) throws FileNotFoundException {
-        this.reader = new BufferedInputStream(new FileInputStream(file), Parser.CHUNK_SIZE + 15);
+    Reader(BufferedInputStream bufferedInputStream) {
+        this.reader = bufferedInputStream;
     }
 
     synchronized public byte[][] read (byte [] bytes, ArrayList<Byte> list) throws IOException, ArrayIndexOutOfBoundsException {
-
         byte[][] arrays;
         if (reader.available() <= Parser.CHUNK_SIZE) {
-            AddressCounter.shutdown();
             hasNext = false;
             byte [] lastBytes = new byte[reader.available()];
             reader.read(lastBytes);
             arrays = new byte[][]{lastBytes};
+            AddressCounter.shutdown();
         }
         else {
             int c;

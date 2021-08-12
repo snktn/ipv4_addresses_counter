@@ -1,24 +1,31 @@
 package ru.snktn.ipv4AddressesCounter;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Parser extends Thread implements Runnable, IPv4AddressExtractor {
-    public static final int CHUNK_SIZE = 491500;
+    static int CHUNK_SIZE = 262129;
+    private static final AtomicInteger activeParsersCount = new AtomicInteger();
+    synchronized static int getActiveParsersCount() {
+        return activeParsersCount.get();
+    }
     private final AddressCounter addressCounter;
     private final Reader reader;
     private final ArrayList<Byte> list = new ArrayList<>(15);
-    private final byte [] bb = new byte[CHUNK_SIZE];
-    public Parser (AddressCounter addressCounter, Reader reader) {
+    private final byte [] bb;
+    Parser (AddressCounter addressCounter, Reader reader) {
+        activeParsersCount.getAndIncrement();
         this.addressCounter = addressCounter;
         this.reader = reader;
+        bb = new byte[CHUNK_SIZE];
     }
 
     @Override
     public void run() {
         while (reader.hasNext()) {
             try {
-                addressCounter.add(extract(concatAndReverse(reader.read(bb, list))));
-                list.clear();
+               addressCounter.add(extract(concatAndReverse(reader.read(bb, list))));
+               list.clear();
             }
             catch (ArrayIndexOutOfBoundsException ignored) {}
             catch (Exception e) {
@@ -26,6 +33,7 @@ public class Parser extends Thread implements Runnable, IPv4AddressExtractor {
                 System.exit(-1);
             }
         }
+        activeParsersCount.decrementAndGet();
     }
 
     private byte [] concatAndReverse (byte[][] arrays) {

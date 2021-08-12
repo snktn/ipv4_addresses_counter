@@ -12,16 +12,24 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class Tests {
+class Tests {
+
+    Random random = new Random();
 
     @Test
-    void shortTest () {
-            test(3);
-    }
-
-    @Test
-    void longTest () {
-            test(1000000);
+    void test () {
+        for (int i = 0; i < 100; i++) {
+            int n = random.nextInt(3) + 1;
+            test(n);
+        }
+        for (int i = 0; i < 100; i++) {
+            int n = random.nextInt(17000) + 1;
+            test(n);
+        }
+        for (int i = 0; i < 10; i++) {
+            int n = random.nextInt(1000000) + 1;
+            test(n);
+        }
     }
 
     private void test (int n) {
