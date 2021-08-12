@@ -17,16 +17,16 @@ Docker:
 **Measurements**
 
 For a file from a test task (106,6 GiB)
-on AWS EC2 c5.xlarge instance (4 vCPUs, 3.4 GHz, 8 GiB memory, gp3(3000 iops, 500 MB/s ), -Xmn2g -Xmx3g,
+on AWS EC2 c5.xlarge instance (4 vCPUs, 3.4 GHz, 8 GiB memory, gp3(3000 iops, 500 MB/s ), -Xmn3g,
 OpenJDK Runtime Environment (build 15+36-1562):
 
-294 sec
+295 sec
 
 ```
 avg-cpu:  %user   %nic   %system   %iowait   %steal   %idle
-          39.66   0.00   4.61      12.36      0.00     43.36
+          39.73   0.00   4.33      10.20      0.00     45.07
 rrqm/s  wrqm/s r/s     w/s  rMB/s  wMB/s avgrq-sz avgqu-sz await r_await w_await %util
-0.00    0.02   1556.99 0.77 364.75 0.00  479.55   0.84     1.07  1.07    0.30    83.65
+0.00    0.02   1489.36 0.70 369.98 0.00  508.52   0.88     1.44  1.44    0.48    87.40
 ```
 
 
