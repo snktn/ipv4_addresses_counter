@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Parser extends Thread implements Runnable, IPv4AddressExtractor {
-    static int CHUNK_SIZE = 262129;
+    static int CHUNK_SIZE = 523249;
     private static final AtomicInteger activeParsersCount = new AtomicInteger();
     synchronized static int getActiveParsersCount() {
         return activeParsersCount.get();
