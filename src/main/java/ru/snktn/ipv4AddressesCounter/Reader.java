@@ -3,11 +3,10 @@ package ru.snktn.ipv4AddressesCounter;
 import java.io.*;
 import java.util.ArrayList;
 
-
 class Reader {
     private final BufferedInputStream reader;
     private volatile boolean hasNext = true;
-    synchronized boolean hasNext() {
+    boolean hasNext() {
         return hasNext;
     }
 

@@ -7,22 +7,24 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 class AddressCounter extends Thread implements Runnable{
     private final AtomicInteger count = new AtomicInteger(0);
-    private volatile static boolean started = false;
-    private static volatile boolean shutDown = false;
-    synchronized static void shutdown () {
-        shutDown = true;
-    }
     private final BitSet [] bitSets = new BitSet[2];
+    private static volatile boolean started = false;
+    private static volatile boolean shutDown = false;
+    final BlockingQueue<int []> queue = new ArrayBlockingQueue<>(16);
+
     AddressCounter (){
         for (int i = 0; i < 2; i++) {
             bitSets[i] = new BitSet(Integer.MAX_VALUE);
         }
     }
 
+    synchronized static void shutdown () {
+        shutDown = true;
+    }
+
     synchronized int getUniqueAddressesCount() {
         return bitSets[0].cardinality() + bitSets[1].cardinality();
     }
-    final BlockingQueue<int []> queue = new ArrayBlockingQueue<>(16);
 
     @Override
     public void run() {
