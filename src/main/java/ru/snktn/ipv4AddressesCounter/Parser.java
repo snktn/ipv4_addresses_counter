@@ -12,19 +12,19 @@ public class Parser extends Thread implements Runnable, IPv4AddressExtractor {
     private final AddressCounter addressCounter;
     private final Reader reader;
     private final ArrayList<Byte> list = new ArrayList<>(15);
-    private final byte [] bb;
+    private final byte [] bytes;
     Parser (AddressCounter addressCounter, Reader reader) {
         activeParsersCount.getAndIncrement();
         this.addressCounter = addressCounter;
         this.reader = reader;
-        bb = new byte[CHUNK_SIZE];
+        bytes = new byte[CHUNK_SIZE];
     }
 
     @Override
     public void run() {
         while (reader.hasNext()) {
             try {
-               addressCounter.add(extract(concatAndReverse(reader.read(bb, list))));
+               addressCounter.add(extract(concatAndReverse(reader.read(bytes, list))));
                list.clear();
             }
             catch (ArrayIndexOutOfBoundsException ignored) {}
